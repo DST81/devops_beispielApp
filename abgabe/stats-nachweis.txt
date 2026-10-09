@@ -1,0 +1,2 @@
+api/tasks/stats
+{"done":1,"open":3,"total":4}

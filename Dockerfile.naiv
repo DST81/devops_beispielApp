@@ -1,0 +1,41 @@
+# Dockerfile.naiv — a DELIBERATELY BAD example. Every comment marks a mistake.
+# Copy this file into beispiel-app/ and build it to compare against the good one:
+#   docker build -f Dockerfile.naiv -t taskboard:naiv .
+#
+# It builds and (mostly) runs, but almost every decision here is wrong. The
+# optimized counterpart is Dockerfile.optimiert.
+
+# BAD: the full "python:3.12" image is several hundred MB larger than
+# "python:3.12-slim". It ships a C compiler and hundreds of packages that a
+# running web app never needs — pure bloat and extra attack surface.
+FROM python:3.12
+
+# BAD: no PYTHONUNBUFFERED=1, so stdout/stderr are buffered and `docker logs`
+# lags behind reality. No PYTHONDONTWRITEBYTECODE=1 either, so .pyc files pile up.
+
+WORKDIR /app
+
+# BAD: copying the ENTIRE build context BEFORE installing dependencies destroys
+# the layer cache. Every single source-code edit invalidates the pip layer
+# below, so every rebuild re-downloads and re-installs all dependencies.
+# BAD: if there were no .dockerignore, "COPY . ." would also drag .git, tests,
+# .venv and — worst of all — a .env file with secrets into the image.
+COPY . .
+
+# BAD: without --no-cache-dir, pip keeps its download cache inside the layer and
+# inflates the image by tens of megabytes.
+RUN pip install -r requirements.txt
+
+# BAD: no USER instruction, so the container runs as root. A process escape is
+# then root inside the container — uncomfortably close to root on the host,
+# because the kernel is shared.
+
+# BAD: no HEALTHCHECK, so Docker and Compose have no way to know whether the
+# application is actually alive or stuck.
+
+EXPOSE 8000
+
+# BAD: this starts Flask's single-threaded DEVELOPMENT server, not a production
+# WSGI server. Worse: wsgi.py binds to 127.0.0.1, so "-p 8000:8000" cannot even
+# reach it from the host — requests time out. Use gunicorn bound to 0.0.0.0.
+CMD ["python", "wsgi.py"]
