@@ -5,22 +5,34 @@
 #   .github/workflows/ci.yml
 # GitHub Actions only reads workflows from that directory, never from code/.
 
-name: CI (minimal)
+name: CI
 
 on:
   push:
+    branches: [main]
+  pull_request:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+#defaults:
+#  run:
+#    working-directory: beispiel-app
+
 jobs:
-  hello:
-    name: First job
+  lint:
+    name: Lint (ruff)
     runs-on: ubuntu-latest
     steps:
-      - name: Print a greeting
-        run: echo "The pipeline runs."
+      - uses: actions/checkout@v4
 
-      - name: Show the context
-        run: |
-          echo "Branch:  $GITHUB_REF_NAME"
-          echo "Commit:  $GITHUB_SHA"
-          echo "Runner:  $RUNNER_OS"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Check style and import order
+        run: ruff check .
