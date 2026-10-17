@@ -59,7 +59,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Build container image
-        run: docker build --build-arg APP_VERSION=ci-${{github.sha}} -t taskboard:ci
+        run: docker build --build-arg APP_VERSION=ci-${{github.sha}} -t taskboard:ci .
 
       - name: Smoke-test the image
         run: |
