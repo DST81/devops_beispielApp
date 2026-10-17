@@ -1,3 +1,5 @@
+![CI](https://github.com/DST81/devops_beispielApp/actions/workflows/ci.yml/badge.svg)
+
 # Taskboard – Beispielanwendung
 
 Die durchgehende Referenzanwendung des Moduls **CDS212 – DevOps**. Ab Woche 3
