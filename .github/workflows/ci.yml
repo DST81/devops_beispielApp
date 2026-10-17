@@ -64,7 +64,7 @@ jobs:
       - name: Smoke-test the image
         run: |
           docker run -d --name taskboard-ci -p 8000:8000 taskboard:ci
-          for i in ${seq 1 30}; do
+          for i in $(seq 1 30); do
             if curl -sf http://127.0.0.1:8000/health; then
               echo "health check passed"
               docker rm -f taskboard-ci
