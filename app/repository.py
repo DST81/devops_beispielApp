@@ -74,17 +74,24 @@ class PostgresTaskRepository:
         self._pool = ConnectionPool(dsn, min_size=1, max_size=5, open=True)
         self._create_schema()
 
+
     def _create_schema(self) -> None:
         with self._pool.connection() as conn:
-            conn.execute(
-                """
-                CREATE TABLE IF NOT EXISTS tasks (
-                    id    SERIAL PRIMARY KEY,
-                    title TEXT NOT NULL,
-                    done  BOOLEAN NOT NULL DEFAULT FALSE
+            # Ensure only one worker initializes the schema at a time.
+            conn.execute("SELECT pg_advisory_lock(724183)")
+            try:
+                conn.execute(
+                    """
+                    CREATE TABLE IF NOT EXISTS tasks (
+                        id    SERIAL PRIMARY KEY,
+                        title TEXT NOT NULL,
+                        done  BOOLEAN NOT NULL DEFAULT FALSE
+                    )
+                    """
                 )
-                """
-            )
+            finally:
+                conn.execute("SELECT pg_advisory_unlock(724183)")
+
 
     def list(self) -> list[Task]:
         with self._pool.connection() as conn:
