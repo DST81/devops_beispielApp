@@ -28,8 +28,8 @@ services:
     # Build the image from the app's Dockerfile. dockerContext is the build
     # context handed to `docker build`; the Dockerfile COPYs (app/, wsgi.py,
     # requirements.txt) are all relative to it.
-    dockerfilePath: ./beispiel-app/Dockerfile
-    dockerContext: ./beispiel-app
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
 
     # No start-command override needed: the image already binds to 8000 and
     # starts a single gunicorn worker by default (ENV GUNICORN_WORKERS=1). The
