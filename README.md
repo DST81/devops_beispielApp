@@ -1,5 +1,5 @@
 ![CI](https://github.com/DST81/devops_beispielApp/actions/workflows/ci.yml/badge.svg)
-
+![CD](https://github.com/DST81/devops_beispielApp/actions/workflows/cd.yml/badge.svg)
 # Taskboard – Beispielanwendung
 
 Die durchgehende Referenzanwendung des Moduls **CDS212 – DevOps**. Ab Woche 3
@@ -11,7 +11,7 @@ die Fachlogik, sondern alles, was um sie herum passiert.
 
 ## Schnellstart
 
-```bash
+```bashs
 cd beispiel-app
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements-dev.txt
